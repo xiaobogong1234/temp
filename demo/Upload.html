@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="../css/animate.css" type="text/css">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/simple-line-icons.css" type="text/css">
+    <link rel="stylesheet" href="../css/font.css" type="text/css">
+    <link rel="stylesheet" href="../css/app.css" type="text/css">
+    <link rel="stylesheet" href="../css/DC_Main.css" type="text/css">
+    <link href="../css/DC_Style.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/DC_NewStyle.css" type="text/css">
+    <link rel="stylesheet" href="../css/hz-app.css">
+    <link href="../js/bootstrap-fileinput-master/css/fileinput.min.css" rel="stylesheet" />
+    <script src="../js/angular.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap-fileinput-master/js/fileinput.min.js"></script>
+    <script src="../js/bootstrap-fileinput-master/themes/explorer/theme.js"></script>
+    <script src="../js/bootstrap-fileinput-master/themes/fa/fatheme.js"></script>
+    <script src="../js/bootstrap-fileinput-master/js/locales/zh.js"></script>
+    <script type="text/javascript" src="../js/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    var app = angular.module('myApp', []);
+    app.controller('myctrl', ['$scope', 'http', function($scope, http) {
+        var myUrl = "http://115.236.2.246:52000/api/FileManager/uploadmultifile";
+        http.post(myUrl).then(function(data) {
+            if (data.success == true) {
+                //fileInto.fileLists(data.message.FileInfo);
+                //console.log(fileInto.fileLists(data.message.FileInfo));
+                var filesUrls = fileInto.fileUrls(data.message.list_file);
+                var filesMes = fileInto.fileNames(data.message.list_file);
+                // var objest='true';
+                if (data.message.list_file.length > 0) {
+                    bindFiles(filesUrls, filesMes); //有文件
+                } else {
+                    bindNewFiles(); //没文件
+                }
+            } else {
+                bindNewFiles(); //没文件
+            }
+        });
+
+        function bindNewFiles() {
+            $("#input-ke-2").fileinput({
+                theme: "explorer",
+                language: 'zh',
+                uploadUrl: "http://115.236.2.246:52000/api/FileManager/uploadmultifile",
+                allowedFileExtensions: ['jpg', 'png', 'gif', 'zip', 'rar', 'doc', 'xls', 'pdf', 'docx', 'txt'],
+                overwriteInitial: false,
+                initialPreviewAsData: false,
+
+                //默认加载的内容initialPreview，initialPreviewConfig
+            });
+            //上传成功回调
+            var successLists = [];
+            $("#input-ke-2").on("fileuploaded", function(event, data, previewId, index) {
+                // console.log(data);
+                if (data.response[0].success == true) {
+                    successLists.push({
+                        res: data.response[0].message,
+                        KeyID: previewId
+                    }); //每次成功的回调都放进来
+                }
+            });
+            // console.log(successLists);
+            //删除成功的回调
+            $("#input-ke-2").on("filesuccessremove", function(event, data, previewId, index) {
+                for (var i = 0; i < successLists.length; i++) {
+                    if (successLists[i].KeyID == data) {
+                        successLists.splice(i, 1);
+                    }
+                }
+                // console.log(successLists);
+            })
+        }
+
+
+        function bindFiles(filesUrls, filesMes) {
+            $("#input-ke-2").fileinput({
+                theme: "explorer",
+                language: 'zh',
+                uploadUrl: "http://115.236.2.246:52000/api/FileManager/uploadmultifile",
+                allowedFileExtensions: ['jpg', 'png', 'gif', 'zip', 'rar', 'doc', 'xls', 'pdf', 'docx', 'txt'],
+                overwriteInitial: false,
+                initialPreviewAsData: true,
+                initialPreview:
+                //这里是已经存在文件的url
+                    filesUrls,
+                initialPreviewConfig: filesMes,
+                preferIconicPreview: true, // this will force thumbnails to display icons for following file extensions
+                previewFileIconSettings: { // configure your icon file extensions
+                    'doc': '<i class="fa fa-file-word-o text-primary"></i>',
+                    'xls': '<i class="fa fa-file-excel-o text-success"></i>',
+                    'ppt': '<i class="fa fa-file-powerpoint-o text-danger"></i>',
+                    'pdf': '<i class="fa fa-file-pdf-o text-danger"></i>',
+                    'zip': '<i class="fa fa-file-archive-o text-muted"></i>',
+                    'htm': '<i class="fa fa-file-code-o text-info"></i>',
+                    'txt': '<i class="fa fa-file-text-o text-info"></i>',
+                    'mov': '<i class="fa fa-file-movie-o text-warning"></i>',
+                    'mp3': '<i class="fa fa-file-audio-o text-warning"></i>',
+                    // note for these file types below no extension determination logic 
+                    // has been configured (the keys itself will be used as extensions)
+                    'jpg': '<i class="fa fa-file-photo-o text-danger"></i>',
+                    'gif': '<i class="fa fa-file-photo-o text-muted"></i>',
+                    'png': '<i class="fa fa-file-photo-o text-primary"></i>'
+                },
+                previewFileExtSettings: { // configure the logic for determining icon file extensions
+                    'doc': function(ext) {
+                        return ext.match(/(doc|docx)$/i);
+                    },
+                    'docx': function(ext) {
+                        return ext.match(/(doc|docx)$/i);
+                    },
+                    'xls': function(ext) {
+                        return ext.match(/(xls|xlsx)$/i);
+                    },
+                    'ppt': function(ext) {
+                        return ext.match(/(ppt|pptx)$/i);
+                    },
+                    'zip': function(ext) {
+                        return ext.match(/(zip|rar|tar|gzip|gz|7z)$/i);
+                    },
+                    'htm': function(ext) {
+                        return ext.match(/(htm|html)$/i);
+                    },
+                    'txt': function(ext) {
+                        return ext.match(/(txt|ini|csv|java|php|js|css)$/i);
+                    },
+                    'mov': function(ext) {
+                        return ext.match(/(avi|mpg|mkv|mov|mp4|3gp|webm|wmv)$/i);
+                    },
+                    'mp3': function(ext) {
+                        return ext.match(/(mp3|wav)$/i);
+                    },
+                }
+                //默认加载的内容initialPreview，initialPreviewConfig
+            });
+            //上传成功回调
+            var successLists = [];
+            $("#input-ke-2").on("fileuploaded", function(event, data, previewId, index) {
+                // console.log(data);
+                successLists.push({
+                    res: data.response[0].message,
+                    KeyID: previewId
+                }); //每次成功的回调都放进来
+            });
+            // console.log(successLists);
+            //删除成功的回调
+            $("#input-ke-2").on("filesuccessremove", function(event, data, previewId, index) {
+                for (var i = 0; i < successLists.length; i++) {
+                    if (successLists[i].KeyID == data) {
+                        successLists.splice(i, 1);
+                    }
+                }
+                // console.log(successLists);
+            })
+        }
+
+    }])
+    </script>
+    <script type="text/javascript" src="../js/factory/Common.js"></script>
+</head>
+
+<body>
+    <div class="container" ng-app="myApp" ng-controller="myctrl">
+        <div class="row row_top_10">
+            <div class="col-md-12">
+                <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#dcModal">打开模态框文件上传</button>
+            </div>
+        </div>
+        <div class="modal fade dc_modal" id="dcModal" tabindex="999999" role="dialog">
+            <div class="modal-dialog modal-width" role="document">
+                <div class="modal-content">
+                    <div class="modal-header dc_modal_header">
+                    </div>
+                    <div class="modal-body">
+                        <label class="control-label label label-primary">附件上传</label>
+                        <div class="space-10"></div>
+                        <input id="input-ke-2" name="inputKE2[]" type="file" multiple class="file-loading">
+                    </div>
+                    <div class="modal-footer dc_modal_footer">
+                        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-sm btn-info">确定</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+    </div>
+</body>
+
+</html>

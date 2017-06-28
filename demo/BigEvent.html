@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="../css/animate.css" type="text/css">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/simple-line-icons.css" type="text/css">
+    <link rel="stylesheet" href="../css/font.css" type="text/css">
+    <link rel="stylesheet" href="../css/app.css" type="text/css">
+    <link rel="stylesheet" href="../css/DC_Main.css" type="text/css">
+    <link href="../css/DC_Style.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/DC_NewStyle.css" type="text/css">
+    <link rel="stylesheet" href="../css/hz-app.css">
+    <link href="../js/jQuery-timedrag/css/layout.css" rel="stylesheet" />
+    <script src="../js/angular.js"></script>
+    <script type="text/javascript">
+    var app = angular.module('myApp', []);
+    app.controller('myctrl', ['$scope', function($scope) {
+        $scope.pros = [{
+            year: '2015-05-20',
+            num: '大事一',
+            title: '项目投标筹备',
+            detail: '准备投标材料等内容准备投标材料等内容准备投标材料等内容',
+            color: 'green'
+        }, {
+            year: '2015-05-20',
+            num: '大事二',
+            title: '项目投标筹备',
+            detail: '准备投标材料等内容准备投标材料等内容准备投标材料等内容',
+            color: 'blue'
+        }, {
+            year: '2015-05-20',
+            num: '大事二',
+            title: '项目投标筹备',
+            detail: '准备投标材料等内容准备投标材料等内容',
+            color: 'red'
+        }, {
+            year: '2015-05-20',
+            num: '大事二',
+            title: '项目投标筹备',
+            detail: '准备投标材料等内容准备投标材料等内容',
+            color: 'orange'
+        }, {
+            year: '2015-05-20',
+            num: '大事一',
+            title: '项目投标筹备',
+            detail: '准备投标材料等内容准备投标材料等内容',
+            color: 'green'
+        }, {
+            year: '2015-05-20',
+            num: '大事二',
+            title: '项目投标筹备',
+            detail: '准备投标材料等内容准备投标材料等内容',
+            color: 'blue'
+        }, {
+            year: '2015-05-20',
+            num: '大事二',
+            title: '项目投标筹备',
+            detail: '准备投标材料等内容准备投标材料等内容',
+            color: 'red'
+        }, {
+            year: '2015-05-20',
+            num: '大事二',
+            title: '项目投标筹备',
+            detail: '准备投标材料等内容准备投标材料等内容',
+            color: 'orange'
+        }];
+        //angular数组遍历完成再执行jquery方法
+            $(function() {
+                var aboutWidth = $(".about").width();
+                $(".process-timeline").width(aboutWidth);
+                var lastRightSpeed = 40; //控制拖动到最右边点是否对准时间刻度线上
+                var processtimelineW = $(".process-timeline").width();
+                var processrowLength = $(".process-body").find('.process-row').length;
+                var processbodyNumber = processrowLength * 200;
+                $(".process-body").css({
+                    "width": processbodyNumber
+                });
+
+                if (processrowLength < 5) {
+                    $("#draggable").draggable('disable');
+                    return;
+                }
+                $("#processLeft").click(function() {
+                    var processContentW = $(".process-content").width();
+                    var processBodyW = $(".process-body").width();
+                    var processBodyML = parseInt($(".ui-draggable").css("left"));
+                    if ((Math.abs(processBodyML) + processtimelineW) >= processBodyW) {
+                        return;
+                    }
+                    $(".ui-draggable").css({
+                        "left": processBodyML - 50
+                    });
+                });
+                $("#processRight").click(function() {
+                    var processBodyML = parseInt($(".ui-draggable").css("left"));
+                    if (processBodyML == 0) {
+                        return;
+                    }
+                    $(".ui-draggable").css({
+                        "left": processBodyML + 50
+                    });
+                });
+
+                $(document).keydown(function(event) {
+                    if (event.keyCode == 39) {
+                        $("#processLeft").click();
+                    }
+                    if (event.keyCode == 37) {
+                        $("#processRight").click();
+                    }
+                });
+
+                $("#draggable").draggable({
+                    cursor: "move",
+                    axis: 'x',
+                    grid: [50, 20],
+                    stop: function(event, ui) {
+                        var FleftNumber = parseInt($("#draggable").css("left"));
+                        if (FleftNumber > 0) {
+                            $("#draggable").animate({
+                                "left": 0
+                            }, 500);
+                            return;
+                        };
+                        var leftNumber = Math.abs(FleftNumber);
+                        leftNumber = leftNumber + processtimelineW;
+                        if (leftNumber > processbodyNumber) {
+                            leftNumber = processbodyNumber;
+                            $("#draggable").animate({
+                                "left": -(leftNumber - processtimelineW + lastRightSpeed)
+                            }, 500);
+                        }
+                    }
+                });
+            })
+        
+
+    }])
+    </script>
+    <script type="text/javascript" src="../js/jQuery-timedrag/plugins/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/jQuery-timedrag/plugins/jquery-ui.min.js"></script>
+</head>
+
+<body>
+    <div class="container" ng-app="myApp" ng-controller="myctrl">
+        <div class="dc_body modal-body wrapper-lg">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 about">
+                                <div class="about-body">
+                                    <!--<div class="about-title text-center">
+                                <h1 class="dc_bigEve_title">项目大事记</h1>
+                            </div>-->
+                                    <div class="about-content process-content">
+                                        <div class="process-timeline draggable ui-widget-content">
+                                            <div id="draggable">
+                                                <div class="process-body">
+                                                    <div class="process-row" ng-repeat="pro in pros" repeat-done="bulid()">
+                                                        <div class="process-time">
+                                                            <div class="time-con">
+                                                                <span class="bgcolor {{pro.color}}"></span>
+                                                                <span class="year">{{pro.year}}</span>
+                                                                <span class="pic {{pro.color}}"><i class="fa fa-map-marker"></i></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="process-noyear">
+                                                            {{pro.num}}
+                                                        </div>
+                                                        <div class="process-content">
+                                                            <h2> {{pro.title}} </h2>
+                                                            <p>
+                                                                {{pro.detail}}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 鼠标点击 滚动 -->
+                                        <div class="scrollMouse text-center">
+                                            <span class="btn btn-sm btn-info" id="processLeft" style="display:inline-block"> < </span>
+                                            <i class="icon icon-mouse"></i>
+                                            <span class="btn btn-sm btn-info" id="processRight" style="display:inline-block"> > </span>
+                                            <!--<div class="dc_banner_warning dc_info">
+                                        点击上面左右箭头/或点击鼠标左键不放左右拖动/或者按键盘左右方向键可浏览更多内容
+                                    </div>-->
+                                            <div class="dc_banner_warning dc_info row_top_10">
+                                                <i class="icon-info fa-lg  dc_icon_mr" style="color:#31708f"></i>点击上面左右箭头/或点击鼠标左键不放左右拖动/或者按键盘左右方向键可浏览更多内容
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

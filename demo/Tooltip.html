@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="../js/bootstrap/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="../css/animate.css" type="text/css">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/simple-line-icons.css" type="text/css">
+    <link rel="stylesheet" href="../css/font.css" type="text/css">
+    <link rel="stylesheet" href="../css/app.css" type="text/css">
+    <link rel="stylesheet" href="../css/DC_Main.css" type="text/css">
+    <link href="../css/DC_Style.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/DC_NewStyle.css" type="text/css">
+    <link rel="stylesheet" href="../css/hz-app.css">
+    <script src="../js/angular.js"></script>
+    <script type="text/javascript">
+    var app = angular.module('myApp', ['ui.bootstrap.tooltip']);
+    app.controller('myctrl', ['$scope', function($scope) {
+        $scope.dom = {
+            Pager: "www"
+        };
+
+    }])
+    </script>
+    <script type="text/javascript" src="../js/tooltip/tooltip.js"></script>
+    <script type="text/javascript" src="../js/tooltip/stackedMap.js"></script>
+    <script src="../js/tooltip/position.js"></script>
+</head>
+
+<body>
+    <div class="container" ng-app="myApp" ng-controller="myctrl" >
+        <form name="modal">
+            <div class="row">
+                <div class="col-md-3 " style="margin: 100px">
+                    <div class="input-group" ng-class="{'has-error':!modal.Pager.$valid}">
+                        <span class="input-group-addon hz_sp_min-width_lg">短号</span>
+                        <input type="text" class="form-control" ng-model="dom.Pager" ng-pattern="/^[0-9]*$/" name="Pager" uib-tooltip={{!modal.Pager.$valid?"短号格式错误":""}} tooltip-trigger="'mouseenter'" tooltip-placement="top-right" tooltip-enable="!modal.Pager.$valid" />
+                        <span class="input-quit" ng-click="dom.Pager=null" ng-show="dom.Pager!=null"> <i
+                    class="fa fa-times fa-1"></i></span>
+                    </div>
+                </div>
+                <div class="col-md-3" style="margin: 100px">
+                    <div class="input-group" ng-class="{'has-error' : !modal.Mobile.$error.required&&!modal.Mobile.$valid}">
+                        <span class="input-group-addon hz_sp_min-width_lg">手机号码 <span
+                    class="hz_required">*</span></span>
+                        <input type="text" class="form-control" ng-model="dom.Mobile" name="Mobile" ng-pattern="/^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/" uib-tooltip={{!modal.Mobile.$error.required&&!modal.Mobile.$valid?"手机号码格式错误":''}} tooltip-trigger="'mouseenter'" tooltip-placement="top-right" tooltip-enable="!modal.Mobile.$valid" required>
+                        <span class="input-quit" ng-click="dom.Mobile=null" ng-show="dom.Mobile!=null"> <i
+                    class="fa fa-times fa-1"></i></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

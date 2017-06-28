@@ -1,0 +1,47 @@
+@charset "UTF-8";
+
+/**
+ * 
+ * @authors Your Name (you@example.org)
+ * @date    2017-06-06 15:34:03
+ * @version $Id$
+ */
+
+.content {
+    margin-top: 9px;
+    padding: 0px 15px 25px 15px;
+    border: 1px solid #ddd;
+    background: #fff;
+    overflow: hidden;
+    height: 100%;
+    fontawesome-webfont
+}
+
+.dc_font_max,
+.dc_font_min {
+    display: inline-block;
+}
+
+.dc_font_max a {
+    font-size: 14px;
+    color: #606060;
+    font-weight: 600;
+}
+
+.dc_font_min a {
+    font-size: 14px;
+    color: #cccccc;
+    font-weight: 400;
+}
+
+.text-success {
+    color: #27c24c;
+}
+
+.no-margin {
+    margin: 0px;
+}
+
+.no-padding {
+    padding: 0px;
+}

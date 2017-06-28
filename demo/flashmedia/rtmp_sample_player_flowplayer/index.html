@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html style="height: 100%;">
+
+<head>
+    <!--   <link rel="stylesheet" type="text/css" href="bootstrap.css"> -->
+    <script type="text/javascript" src="flowplayer-3.2.8.min.js"></script>
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <!--    <style type="text/css">
+     .pager li > .active {
+         color: #fff;
+         background-color: #428bca;
+     }
+     </style> -->
+    <title>视频监控</title>
+    <script>
+    var videotype = GetQueryString("type");
+    var ip = GetQueryString("ip");
+    var result = {};
+    //ip = '9dd6a658-f18c-44da-8218-1114444ead01';
+    //定时更新心跳
+    setInterval(function() {
+            if (result.videosmID != null) {
+                $.ajax({
+                    url: 'http://220.189.229.37:19902/ProjectStandardWebService/VideoStream.ashx',
+                    type: "get",
+                    dataType: "json",
+                    data: {
+                        t: 'UpdateVideoHeartbeat',
+                        videosmID: result.videosmID
+
+                    },
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    success: function(data) {
+
+
+                    }
+                });
+            }
+
+        }, 10000)
+        //获取浏览器信息
+    var browser = {
+        versions: function() {
+            var u = navigator.userAgent,
+                app = navigator.appVersion;
+            return { //移动终端浏览器版本信息
+                trident: u.indexOf('Trident') > -1, //IE内核
+                presto: u.indexOf('Presto') > -1, //opera内核
+                webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+                gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+                mobile: !!u.match(/AppleWebKit.*Mobile.*/) || !!u.match(/AppleWebKit/), //是否为移动终端
+                ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+                iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者QQHD浏览器
+                iPad: u.indexOf('iPad') > -1, //是否iPad
+                webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部
+            };
+        }(),
+        language: (navigator.browserLanguage || navigator.language).toLowerCase()
+    }
+
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+    </script>
+</head>
+
+<body onload="init()" style="height: 96%;">
+    <div id="web" style="display: none;height: 100%;">
+        <!-- this A tag is where your Flowplayer will be placed. it can be anywhere -->
+        <a href="#" id="player" style="height: 100%;">
+        </a>
+        <!-- this will install flowplayer inside previous A- tag. -->
+    </div>
+    <!-- <div class="container" id="webBtns" style="display: none;">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="...">
+                    <ul class="pager">
+                        <li style="cursor: pointer;"><a onclick="refresh(1)">高清视频</a></li>
+                        <li style="cursor: pointer;"><a class="active" onclick="refresh(0)">标清视频</a></li>
+                        <li style="cursor: pointer;"><a onclick="refresh()">刷新页面</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div> -->
+    <div id="mobile" style="display: none">
+        <video id="video" controls="controls" width="100%" height="100%">
+            您的浏览器不支持 video 标签。
+        </video>
+    </div>
+</body>
+<script>
+//flowpaly打开视频
+function refresh(type) {
+
+    // if (type != null) {
+    //     $("li a").removeClass('active');
+    //     $("li a").eq(1 - type).addClass("active");
+    //     videotype = type;
+    // }
+    $.ajax({
+        url: 'http://220.189.229.37:19902/ProjectStandardWebService/VideoStream.ashx',
+        type: "get",
+        dataType: "json",
+        data: {
+            t: 'OpenVideoStream',
+            videoID: ip,
+            isHighdefinition: videotype
+        },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        success: function(data) {
+            if (data[0].success == "true") {
+                result = data[0].message;
+                console.log(result);
+                //document.getElementById("web").style.height = (getHeight() - 20) + "px";
+                flowplayer("player", "flowplayer-3.2.8.swf", {
+                    clip: {
+                        url: result.Name,
+                        provider: 'rtmp',
+                        live: true,
+                    },
+                    plugins: {
+                        rtmp: {
+                            url: 'flowplayer.rtmp-3.2.8.swf',
+                            netConnectionUrl: "rtmp://220.189.229.37:19955/live",
+                            image: "http://ww4.sinaimg.cn/large/b6839357jw1e3val80tknj20dw099jsb.jpg" //视频封面（可选）
+                                // netConnectionUrl: 'rtmp://172.168.10.40:19955/live
+                        }
+
+                    }
+                });
+
+            } else {
+                document.getElementById("web").style.background = "url('./timg.jpg') no-repeat  100% 100%";
+                document.getElementById("web").style.backgroundSize = "100% 100%";
+
+            }
+
+
+
+        },
+        error: function() {
+            document.getElementById("web").style.background = "url('./timg.jpg') no-repeat  100% 100%";
+            document.getElementById("web").style.backgroundSize = "100% 100%";
+
+        }
+    });
+}
+//初始化
+function init() {
+    //判断是否为移动端
+    if (browser.versions.android || browser.versions.iPhone || browser.versions.ios) {
+        //video标签打开视频
+        $.ajax({
+            url: 'http://220.189.229.37:19902/ProjectStandardWebService/VideoStream.ashx',
+            type: "get",
+            dataType: "json",
+            data: {
+                t: 'OpenVideoStream',
+                videoID: ip,
+                isHighdefinition: videotype
+            },
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            success: function(data) {
+                if (data[0].success == "true") {
+                    result = data[0].message;
+                    document.getElementById("mobile").style.display = "";
+                    document.getElementById("mobile").style.height = (window.innerHeight - 20) + "px";
+                    document.getElementById("video").src = "http://" + result.Address + result.Name + "/playlist.m3u8";
+                } else {
+                            document.getElementById("web").style.display = "";
+                    document.getElementById("web").style.background = "url('./timg.jpg') no-repeat  100% 100%";
+                    document.getElementById("web").style.backgroundSize = "100% 100%";
+                }
+
+
+            },
+            error: function() {
+                        document.getElementById("web").style.display = "";
+                document.getElementById("web").style.background = "url('./timg.jpg') no-repeat  100% 100%";
+                document.getElementById("web").style.backgroundSize = "100% 100%";
+            }
+        });
+
+    } else {
+        document.getElementById("web").style.display = "";
+        //  document.getElementById("webBtns").style.display = "";
+
+        refresh();
+    }
+
+}
+</script>
+
+</html>
